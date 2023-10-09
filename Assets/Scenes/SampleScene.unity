@@ -951,7 +951,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 302907164}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.186, y: -3.275, z: 0}
+  m_LocalPosition: {x: -7.186, y: -3.27, z: 0}
   m_LocalScale: {x: 0.18219554, y: 0.18219554, z: 0.18219554}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -971,6 +971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heroSpeed: 3
+  jumpForce: 400
 --- !u!50 &302907169
 Rigidbody2D:
   serializedVersion: 4
@@ -991,7 +992,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &302907170
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1005,7 +1006,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.4692924, y: 0.08281672}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1016,7 +1017,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.41, y: 5.42}
+  m_Size: {x: 3.1525574, y: 4.9231005}
   m_EdgeRadius: 0
 --- !u!1 &340414145
 GameObject:

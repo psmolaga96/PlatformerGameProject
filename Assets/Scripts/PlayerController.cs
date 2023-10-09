@@ -9,12 +9,12 @@ public class PlayerController : MonoBehaviour
     bool dirToRight = true;
     float horizontalMove;
     public float heroSpeed;
+    public float jumpForce;
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         rgdBody = GetComponent<Rigidbody2D>();
-        rgdBody.velocity = new Vector2(horizontalMove*heroSpeed, rgdBody.velocity.y);
     }
 
     // Update is called once per frame
@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalMove = Input.GetAxis("Horizontal");
         anim.SetFloat("speed",Mathf.Abs(horizontalMove));
+        rgdBody.velocity = new Vector2(horizontalMove*heroSpeed, rgdBody.velocity.y);
 
         if (horizontalMove<0 && dirToRight)
             {
@@ -31,6 +32,12 @@ public class PlayerController : MonoBehaviour
             {
                 Flip();
             }
+        if (Input.GetKeyDown(KeyCode.Space))
+            {
+                rgdBody.AddForce(new Vector2(0f, jumpForce));
+                anim.SetTrigger("jump");
+            }
+
     }
     void Flip ()
     {
