@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb;
     bool isFacingRight = true;
     public Animator animator;
+    Damageable damageable;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -17,6 +18,15 @@ public class PlayerMovement : MonoBehaviour
     public float jumpPower = 10f;
     public int maxJumps = 2;
     int jumpsRemaining;
+
+    [Header("Dashing")]
+    public bool canDash = true;
+    public bool isDashing = false;
+    public float dashingPower = 24f;
+    public float dashingTime = 0.2f;
+    public float dashingCooldown = 1f;
+
+    [SerializeField] private TrailRenderer tr;
 
 
     [Header("GroundCheck")]
@@ -33,11 +43,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("WallMovement")]
     public bool wallSlide = false;
     public float wallSlideSpeed = 2f;
-    bool isWallSliding;
+    public bool isWallSliding;
 
     //Wall Jumping
     public bool wallJump = false;
-    bool isWallJumping;
+    public bool isWallJumping;
     float wallJumpDirection;
     float wallJumpTime = 0.5f;
     float wallJumpTimer;
@@ -48,6 +58,10 @@ public class PlayerMovement : MonoBehaviour
     public float maxFallSpeed = 10f;
     public float fallSpeedMultiplier = 2f;
     // Start is called before the first frame update
+    private void Awake()
+    {
+        damageable = GetComponent<Damageable>();
+    }
     void Start()
     {
         
@@ -56,20 +70,21 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GroundCheck();
-        if (wallSlide)
-        {
-            WallSlide();
-        }
-        if (wallJump)
-        {
-            WallJump();
-        }
         Gravity();
-        if (!isWallJumping)
+        GroundCheck();
+        WallSlide();
+        WallJump();
+        animator.SetBool("isWallSliding", isWallSliding);
+        if (isDashing)
         {
-            rb.velocity = new Vector2(horizontalMovement * moveSpeed, rb.velocity.y);
-            Flip();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            if (!WallCheck())
+            {
+                StartCoroutine(Dash());
+            }
         }
         if(rb.velocity.y < 0 && !isGrounded && !isWallSliding)
         {
@@ -79,9 +94,27 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetBool("isFalling", false);
         }
+        animator.SetFloat("magnitude", Mathf.Abs(horizontalMovement));
         animator.SetFloat("yVelocity", rb.velocity.y);
-        animator.SetFloat("magnitude", rb.velocity.magnitude);
-        animator.SetBool("isWallSliding", isWallSliding);
+        animator.SetBool("isDashing", isDashing);
+    }
+    private void FixedUpdate()
+    {
+        if (isDashing)
+        {
+            return;
+        }
+        if (!isWallJumping)
+        {
+            if (IsAlive) 
+            {
+                if (!damageable.LockVelocity)
+                {
+                    rb.velocity = new Vector2(CurrentMoveSpeed * moveSpeed, rb.velocity.y);
+                    Flip();
+                }
+            }
+        }
     }
     private void Gravity()
     {
@@ -107,13 +140,28 @@ public class PlayerMovement : MonoBehaviour
             isWallSliding = false;
         }
     }
+    public float CurrentMoveSpeed { get
+        {
+            if (CanMove)
+            {
+                return horizontalMovement;
+            }
+            else
+            {
+                return 0;
+            }
+        } }
+    public bool CanMove { get
+        {
+            return animator.GetBool("canMove");
+        } }
     public void Move(InputAction.CallbackContext context)
     {
-        horizontalMovement = context.ReadValue<Vector2>().x;
+            horizontalMovement = context.ReadValue<Vector2>().x;
     }
     public void Jump(InputAction.CallbackContext context)
     {
-        if (jumpsRemaining > 0)
+        if (jumpsRemaining > 0 && CanMove)
         {
             if (context.performed)
             {
@@ -121,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
                 jumpsRemaining--;
                 animator.SetTrigger("jump");
             }
-            else if (context.canceled && rb.velocity.y > 0)
+            else if (context.canceled && rb.velocity.y > 0 && CanMove)
             {
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
                 jumpsRemaining--;
@@ -130,7 +178,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Wall Jump
-        if (context.performed && wallJumpTimer > 0f)
+        if (context.performed && wallJumpTimer > 0f && CanMove)
         {
             isWallJumping = true;
             rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); // Jump alway form wall
@@ -153,7 +201,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isWallSliding)
         {
-            isWallSliding = false;
+            isWallJumping = false;
             wallJumpDirection = -transform.localScale.x;
             wallJumpTimer = wallJumpTime;
 
@@ -185,6 +233,14 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = false;
         }
     }
+    public bool IsAlive
+    {
+        get
+        {
+            return animator.GetBool("isAlive");
+        }
+    }
+
     private void Flip()
     {
         if(isFacingRight && horizontalMovement < 0 || !isFacingRight && horizontalMovement > 0)
@@ -201,5 +257,31 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(wallCheckPos.position, wallCheckSize);
+    }
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float orginalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+        rb.gravityScale = orginalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
+    }
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.started && isGrounded && IsAlive)
+        {
+            animator.SetTrigger("attack");
+        }
+    }
+    public void OnHit(int damage, Vector2 knockback)
+    {
+        rb.velocity = new Vector2(knockback.x, rb.velocity.y + knockback.y);
     }
 }
