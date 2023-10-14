@@ -18,8 +18,8 @@ public class FollowingHero : MonoBehaviour
     {
         Vector3 newCameraPosition = new Vector3(hero.transform.position.x,
             hero.transform.position.y, transform.position.z);
-        transform.position = newCameraPosition;
-        transform.position = Vector3.SmoothDamp(transform.position, newCameraPosition,
+            transform.position = newCameraPosition;
+            transform.position = Vector3.SmoothDamp(transform.position, newCameraPosition,
             ref currentVel, smoothTime);
 
     }
