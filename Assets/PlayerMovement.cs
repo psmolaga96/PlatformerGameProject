@@ -94,6 +94,11 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetBool("isFalling", false);
         }
+
+        if (!IsAlive)
+        {
+            rb.velocity = Vector2.zero;
+        }
         animator.SetFloat("magnitude", Mathf.Abs(horizontalMovement));
         animator.SetFloat("yVelocity", rb.velocity.y);
         animator.SetBool("isDashing", isDashing);
