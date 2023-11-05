@@ -62,10 +62,6 @@ public class PlayerMovement : MonoBehaviour
     {
         damageable = GetComponent<Damageable>();
     }
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -228,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void GroundCheck()
     {
-        if(Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0, groundLayer))
+        if (Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0, groundLayer))
         {
             jumpsRemaining = maxJumps;
             isGrounded = true;

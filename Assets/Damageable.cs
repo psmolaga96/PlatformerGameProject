@@ -5,10 +5,11 @@ using UnityEngine.Events;
 
 public class Damageable : MonoBehaviour
 {
-    public UnityEvent<int, Vector2> damageableHit;
-
+    public UnityEvent<int,Vector2> damageableHit;
+    public Rigidbody2D rb;
     Animator animator;
     [SerializeField] private int _maxHealth = 100;
+
     public  int MaxHealth
     {
         get

@@ -3183,6 +3183,12 @@ MonoBehaviour:
   moveSpeed: 5
   jumpPower: 10
   maxJumps: 2
+  canDash: 1
+  isDashing: 0
+  dashingPower: 24
+  dashingTime: 0.2
+  dashingCooldown: 1
+  tr: {fileID: 0}
   groundCheckPos: {fileID: 722631895}
   groundCheckSize: {x: 0.46, y: 0.04}
   groundLayer:
@@ -3195,7 +3201,9 @@ MonoBehaviour:
     m_Bits: 128
   wallSlide: 0
   wallSlideSpeed: 2
+  isWallSliding: 0
   wallJump: 0
+  isWallJumping: 0
   wallJumpPower: {x: 5, y: 10}
   baseGravity: 1.5
   maxFallSpeed: 5
@@ -4001,6 +4009,12 @@ MonoBehaviour:
   moveSpeed: 5
   jumpPower: 10
   maxJumps: 2
+  canDash: 1
+  isDashing: 0
+  dashingPower: 24
+  dashingTime: 0.2
+  dashingCooldown: 1
+  tr: {fileID: 0}
   groundCheckPos: {fileID: 1120615663}
   groundCheckSize: {x: 0.5, y: 0.05}
   groundLayer:
@@ -4013,7 +4027,9 @@ MonoBehaviour:
     m_Bits: 128
   wallSlide: 0
   wallSlideSpeed: 2
+  isWallSliding: 0
   wallJump: 0
+  isWallJumping: 0
   wallJumpPower: {x: 5, y: 10}
   baseGravity: 1.5
   maxFallSpeed: 5
