@@ -15,7 +15,21 @@ public class EnemySkeletonAnimationTrigger : MonoBehaviour
         foreach (var hit in colliders)
         {
             if (hit.GetComponent<Player>() != null)
-                hit.GetComponent<Player>().Damage();
+            {
+                PlayerStats target = hit.GetComponent<PlayerStats>();
+                enemy.stats.DoDamage(target);
+            }
+        }
+    }
+    public void MakeTransparent() => StartCoroutine("FadeOut");
+    IEnumerator FadeOut()
+    {
+        for (float i = 1f; i >- 0.05f; i-= 0.05f)
+        {
+            Color c = enemy.sr.material.color;
+            c.a = i;
+            enemy.sr.material.color = c;
+            yield return new WaitForSeconds(0.01f);
         }
     }
 

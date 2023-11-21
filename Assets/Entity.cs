@@ -8,8 +8,10 @@ public class Entity : MonoBehaviour
     #region Conponents
     public Animator anim { get; private set; }
     public Rigidbody2D rb { get; private set; }
-
     public EntityFX fx { get; private set; }
+    public SpriteRenderer sr { get; private set; }
+    public CharacterStats stats { get; private set; }
+    public CapsuleCollider2D cd { get; private set; }
     #endregion
 
     [Header("Knockback")]
@@ -28,26 +30,31 @@ public class Entity : MonoBehaviour
 
     public int facingDir { get; private set; } = 1;
     protected bool facingRight = true;
+
+    public System.Action onFlipped;
     protected virtual void Awake()
     {
 
     }
     protected virtual void Start() 
     {
-        fx = GetComponentInChildren<EntityFX>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         anim = GetComponentInChildren<Animator>();
+        fx = GetComponent<EntityFX>();
         rb = GetComponent<Rigidbody2D>();
+        stats = GetComponent<CharacterStats>();
+        cd = GetComponent<CapsuleCollider2D>();
     }
     protected virtual void Update() 
     { 
 
     }
 
-    public virtual void Damage()
+    public virtual void DamageEffect()
     {
         fx.StartCoroutine("FlashFX");
         StartCoroutine("HitKnockback");
-        Debug.Log(gameObject.name + "was damaged");
+        //Debug.Log(gameObject.name + "was damaged");
     }
 
     protected virtual IEnumerator HitKnockback()
@@ -78,6 +85,8 @@ public class Entity : MonoBehaviour
         Vector3 ls = transform.localScale;
         ls.x *= -1;
         transform.localScale = ls;
+        if(onFlipped != null)
+            onFlipped();
     }
     public virtual void FlipController(float _x)
     {
@@ -105,4 +114,19 @@ public class Entity : MonoBehaviour
         FlipController(_xVelocity);
     }
     #endregion
+    public void MakeTransparent(bool _transparent)
+    {
+        if (_transparent)
+            sr.color = Color.clear;
+        else
+            sr.color = Color.white;
+    }
+    public void RemoveObject()
+    {
+        Destroy(gameObject);
+    }
+    public virtual void Die()
+    {
+
+    }
 }
